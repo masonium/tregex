@@ -144,8 +144,6 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
     file.add(saveSentences);
     file.add(saveHistory);
 
-
-
     //make edit menu
     JMenu edit = new JMenu("Edit");
     copy = new JMenuItem("Copy");

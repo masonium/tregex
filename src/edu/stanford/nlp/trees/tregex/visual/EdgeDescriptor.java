@@ -12,16 +12,21 @@ public class EdgeDescriptor {
 		UNARY_DESCENDANT,
 		SIBLING,
 		//IMMEDIATE_SIBLING,
-		EQUALS,
-		DESCENDANT_VIA,
-		PRECEDES_VIA
+		EQUALS
+		//DESCENDANT_VIA,
+		//PRECEDES_VIA
 	}
 	
 	Type edgeType;
 	boolean optional;
 	int N;
 	Node viaNode;
-	public String simpleRender(boolean reverse) {
+	
+	public String render(boolean reverse) {
+		return simpleRender( reverse );
+	}
+	
+	private String simpleRender(boolean reverse) {
 		boolean normal = !reverse;
 		
 		switch (edgeType) {

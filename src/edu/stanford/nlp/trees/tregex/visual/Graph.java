@@ -23,15 +23,11 @@ public class Graph {
 	 * convert to a tregex query
 	 * breadth-first search, starting with the head node
 	 */
-	public String toString() {
-		
+	public String toTregexQuery() {
 		Map<Node, String> labels = assignLabelsToNodes( );
-		
-		Set<Node> visitedNodes = new HashSet<Node>();
-		Queue edgeQueue = new Queue();
-		
-		Node curr = headNode;
-		visitedNodes.add( curr );
+				
+		return visitNode( headNode, null, new HashSet<Node>(), new HashSet<Edge>(),
+				labels);
 	}
 	
 	public String visitNode( Node currentNode, Node previousNode,
@@ -53,11 +49,42 @@ public class Graph {
 			visitedEdges.add(e);
 			
 			// render the edge
-			query += " " + e.render( false ) + visitNode( e.n2, currentNode, 
-					visitedNodes, visitedEdges, labels );
+			query += " " + e.render( false ) + "(" + visitNode( e.n2, currentNode, 
+					visitedNodes, visitedEdges, labels ) + ")";
 			
-		}	
+		}
+		for ( Edge e: currentNode.incomingEdges ) {
+			// skip any relations already rendered
+			if ( visitedEdges.contains(e) )
+				continue;
+			
+			visitedEdges.add(e);
+			
+			// render the edge
+			query += " " + e.render( false ) + "(" + visitNode( e.n1, currentNode, 
+					visitedNodes, visitedEdges, labels ) + ")";
+			
+		}
+		
+		return query;
 	}
+	
+	/**
+	 * Compute the query string contribution from this edge
+	 * @param edge
+	 * @param currentNode
+	 * @param reverse
+	 * @param visitedNodes
+	 * @param visitedEdges
+	 * @param labels
+	 * @return
+	 */
+	/*
+	public String visitEdge( Edge edge, Node currentNode, boolean reverse,
+			Set<Node> visitedNodes, Set<Edge> visitedEdges,
+			Map<Node, String> labels ) {
+		
+	}*/
 	
 	private Map<Node, String> assignLabelsToNodes() {
 		Map<Node, String> labelMap = new HashMap<Node, String>();
