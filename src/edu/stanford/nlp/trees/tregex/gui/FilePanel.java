@@ -46,7 +46,6 @@ import javax.swing.tree.TreePath;
 
 import edu.stanford.nlp.trees.TreeReaderFactory;
 
-
 /**
  * Class representing the hierarchy of files in which trees may be searched and
  * allowing users to select whether to search a particular file or not

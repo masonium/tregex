@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="stanford-tregex-2009-08-30.jar"/>
 	<classpathentry kind="lib" path="stanford-tregex.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/mason/workspace/tregex-gui/swingfx_all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

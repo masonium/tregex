@@ -97,6 +97,7 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
   private JMenuItem saveSentences;
   private JMenuItem saveHistory;
   private JMenuItem loadTsurgeon;
+  private JMenuItem visualQuery;
   private JMenuItem quit;//for when we're not running on a mac
   private JMenuItem copy;
   private JMenuItem clearFileList;
@@ -159,7 +160,14 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
     if(!isMacOSX()) {
       file.addSeparator();
       JMenu tools = new JMenu("Tools");
+
+      visualQuery = new JMenuItem("Construct visual query");
+      visualQuery.addActionListener(this);
+      visualQuery.setEnabled(true);
+      tools.add(visualQuery);
+      tools.addSeparator();
       tools.add(preferences);
+
       mbar.add(tools);
       file.addSeparator();
       file.add(quit);
@@ -715,6 +723,8 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
       doSaveHistory();
     } else if (source == clearFileList) {
       doClearFileList();
+    } else if (source == visualQuery) {
+      doVisualQuery();
     }
   }
 
@@ -723,6 +733,10 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
     clearFileList.setEnabled(false);
   }
 
+  public void doVisualQuery() {
+    // TODO: add visual query GUI
+  }
+  
   public static void doQuit() {
     System.exit(0);
   }

@@ -2,19 +2,46 @@ package edu.stanford.nlp.trees.tregex.visual;
 
 public class EdgeDescriptor {
 	public enum Type {
-		DESCENDANT,
-		DIRECT_DESCENDANT,
-		NTH_CHILD,
-		NTH_TO_LAST_CHILD,
-		PRECEDES,
-		IMMEDIATELY_PRECEDES,
-		ONLY_DESCENDANT,
-		UNARY_DESCENDANT,
-		SIBLING,
+		DESCENDANT("Descendant of"),
+		DIRECT_DESCENDANT("Direct Descendant of"),
+		NTH_CHILD("Nth child of", true),
+		NTH_TO_LAST_CHILD("Nth Child of", true),
+		PRECEDES("Precedes"),
+		IMMEDIATELY_PRECEDES("Immediately Precedes"),
+		ONLY_DESCENDANT("Only descendant of"),
+		UNARY_DESCENDANT("Descendant of (via unary tree)"),
+		SIBLING("Sibling of"),
 		//IMMEDIATE_SIBLING,
-		EQUALS
+		EQUALS("Equal to");
 		//DESCENDANT_VIA,
 		//PRECEDES_VIA
+		
+		private String name;
+		private boolean hasNumberArg;
+		private Type(String name, boolean hasNumberArg) {
+		  this.name = name;
+		  this.hasNumberArg = hasNumberArg;
+		}
+		private Type(String name) { 
+		  this(name, false);  
+		}
+		/**
+		 * Return a list of all of the text descriptions of enums
+		 * @return
+		 */
+		public static String[] descriptions() {
+		  String [] descs = new String[ Type.values().length ];
+		  for ( int i = 0; i < Type.values().length; ++i )
+		    descs[i] = Type.values()[i].name;
+		  return descs;
+		}
+		
+    public String getName() {
+      return name;
+    }
+    public boolean hasNumberArg() {
+      return hasNumberArg;
+    }
 	}
 	
 	Type edgeType;
@@ -57,4 +84,40 @@ public class EdgeDescriptor {
 			return "==";				
 		}
 	}
+
+	
+	
+	
+  public Type getEdgeType() {
+    return edgeType;
+  }
+
+  public void setEdgeType(Type edgeType) {
+    this.edgeType = edgeType;
+  }
+
+  public boolean isOptional() {
+    return optional;
+  }
+
+  public void setOptional(boolean optional) {
+    this.optional = optional;
+  }
+
+  public int getN() {
+    return N;
+  }
+
+  public void setN(int n) {
+    if (n > 0)
+      N = n;
+  }
+
+  public Node getViaNode() {
+    return viaNode;
+  }
+
+  public void setViaNode(Node viaNode) {
+    this.viaNode = viaNode;
+  }
 }
