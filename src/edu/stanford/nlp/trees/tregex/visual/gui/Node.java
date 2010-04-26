@@ -5,7 +5,6 @@ import java.awt.Component;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.border.Border;
 
 import net.java.swingfx.jdraggable.Draggable;
 
