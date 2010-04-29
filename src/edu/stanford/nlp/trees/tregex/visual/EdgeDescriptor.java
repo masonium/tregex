@@ -47,7 +47,7 @@ public class EdgeDescriptor {
 	Type edgeType;
 	boolean optional;
 	int N;
-	Node viaNode;
+	QueryNode viaNode;
 	
 	public String render(boolean reverse) {
 		return simpleRender( reverse );
@@ -113,11 +113,11 @@ public class EdgeDescriptor {
       N = n;
   }
 
-  public Node getViaNode() {
+  public QueryNode getViaNode() {
     return viaNode;
   }
 
-  public void setViaNode(Node viaNode) {
+  public void setViaNode(QueryNode viaNode) {
     this.viaNode = viaNode;
   }
 }

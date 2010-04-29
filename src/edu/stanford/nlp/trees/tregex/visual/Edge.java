@@ -2,14 +2,23 @@ package edu.stanford.nlp.trees.tregex.visual;
 
 public class Edge {
 
-	public Node getNode1() { return n1; }
-	public Node getNode2() { return n2; }
+	public QueryNode getNode1() { return n1; }
+	public QueryNode getNode2() { return n2; }
 	public EdgeDescriptor getDescriptor() { return descriptor; }
 	
-	Node n1;
-	Node n2;
+	QueryNode n1;
+	QueryNode n2;
 
 	EdgeDescriptor descriptor;
+
+	public Edge( ) {
+	  this( EdgeDescriptor.Type.DESCENDANT );
+	}
+	
+	public Edge( EdgeDescriptor.Type type ) {
+	  descriptor = new EdgeDescriptor( );
+	  descriptor.edgeType = type;
+	}
 	
 	@Override
 	public boolean equals( Object obj ) {

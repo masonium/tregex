@@ -15,6 +15,7 @@ public class Node extends JLabel implements Draggable {
   public Node(String label) {
     super(label);
     this.setBorder( BorderFactory.createLineBorder( Color.BLACK ) );
+    setVisible(true);
   }
 
   @Override

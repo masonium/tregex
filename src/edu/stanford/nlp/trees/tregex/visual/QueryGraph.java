@@ -1,22 +1,24 @@
 package edu.stanford.nlp.trees.tregex.visual;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import sun.misc.Queue;
+//import sun.misc.Queue;
 
-public class Graph {
+public class QueryGraph {
 	
-	List<Node> nodes;
+	List<QueryNode> nodes;
 	List<Edge> edges;
 
-	Node headNode;
+	QueryNode headNode;
 	
-	public Graph() {
-		
+	public QueryGraph() {
+	  this.nodes = new ArrayList<QueryNode>();
+	  this.edges = new ArrayList<Edge>();		
 	}
 	
 	/**
@@ -24,15 +26,15 @@ public class Graph {
 	 * breadth-first search, starting with the head node
 	 */
 	public String toTregexQuery() {
-		Map<Node, String> labels = assignLabelsToNodes( );
+		Map<QueryNode, String> labels = assignLabelsToNodes( );
 				
-		return visitNode( headNode, null, new HashSet<Node>(), new HashSet<Edge>(),
+		return visitNode( headNode, null, new HashSet<QueryNode>(), new HashSet<Edge>(),
 				labels);
 	}
 	
-	public String visitNode( Node currentNode, Node previousNode,
-			Set<Node> visitedNodes, Set<Edge> visitedEdges,
-			Map<Node, String> labels ) {
+	public String visitNode( QueryNode currentNode, QueryNode previousNode,
+			Set<QueryNode> visitedNodes, Set<Edge> visitedEdges,
+			Map<QueryNode, String> labels ) {
 		
 		String label = labels.get( currentNode );
 		if ( visitedNodes.contains( currentNode ) )
@@ -49,7 +51,7 @@ public class Graph {
 			visitedEdges.add(e);
 			
 			// render the edge
-			query += " " + e.render( false ) + "(" + visitNode( e.n2, currentNode, 
+			query += " " + e.render( false ) + " (" + visitNode( e.n2, currentNode, 
 					visitedNodes, visitedEdges, labels ) + ")";
 			
 		}
@@ -61,7 +63,7 @@ public class Graph {
 			visitedEdges.add(e);
 			
 			// render the edge
-			query += " " + e.render( false ) + "(" + visitNode( e.n1, currentNode, 
+			query += " " + e.render( true ) + " (" + visitNode( e.n1, currentNode, 
 					visitedNodes, visitedEdges, labels ) + ")";
 			
 		}
@@ -86,9 +88,9 @@ public class Graph {
 		
 	}*/
 	
-	private Map<Node, String> assignLabelsToNodes() {
-		Map<Node, String> labelMap = new HashMap<Node, String>();
-		for (Node node: nodes) {
+	private Map<QueryNode, String> assignLabelsToNodes() {
+		Map<QueryNode, String> labelMap = new HashMap<QueryNode, String>();
+		for (QueryNode node: nodes) {
 			String label = new String(node.label);
 			if (label.isEmpty())
 				label = generateLabel();
@@ -103,13 +105,19 @@ public class Graph {
 		return "___g" + (labelCounter++);
 	}
 
-	public Node createNode(  ) {
-		Node newNode = new Node();
+	public QueryNode createNode(  ) {
+		QueryNode newNode = new QueryNode();
 		nodes.add( newNode );
 		return newNode;
 	}
 	
-	public void addEdge(Edge e, Node n1, Node n2) {
+	public Edge createEdge(QueryNode n1, QueryNode n2) {
+	  Edge e = new Edge();
+	  addEdge( e, n1, n2 );
+	  return e;
+	}
+	
+	public void addEdge(Edge e, QueryNode n1, QueryNode n2) {
 		e.n1 = n1;
 		e.n2 = n2;
 		n1.outgoingEdges.add( e );
@@ -121,5 +129,20 @@ public class Graph {
 		e.n1.outgoingEdges.remove( e );
 		e.n2.incomingEdges.remove( e );
 		edges.remove( e );
+	}
+	
+	public static void main( String [] args ) {
+	  QueryGraph graph = new QueryGraph();
+	  QueryNode n1 = graph.createNode();
+	  QueryNode n2 = graph.createNode();
+	  QueryNode n3 = graph.createNode();
+	  
+	  Edge e1 = new Edge( EdgeDescriptor.Type.DESCENDANT);
+	  graph.addEdge( e1, n1, n2 );
+	  Edge e2 = new Edge( EdgeDescriptor.Type.SIBLING);
+	  graph.addEdge( e2, n2, n3 );
+	  graph.headNode = n1;
+	  
+	  System.out.println( graph.toTregexQuery() );
 	}
 }
