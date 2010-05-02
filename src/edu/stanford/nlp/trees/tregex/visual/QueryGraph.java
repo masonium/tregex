@@ -13,8 +13,6 @@ public class QueryGraph {
 	
 	List<QueryNode> nodes;
 	List<Edge> edges;
-
-	QueryNode headNode;
 	
 	public QueryGraph() {
 	  this.nodes = new ArrayList<QueryNode>();
@@ -25,7 +23,7 @@ public class QueryGraph {
 	 * convert to a tregex query
 	 * breadth-first search, starting with the head node
 	 */
-	public String toTregexQuery() {
+	public String toTregexQuery( QueryNode headNode ) {
 		Map<QueryNode, String> labels = assignLabelsToNodes( );
 				
 		return visitNode( headNode, null, new HashSet<QueryNode>(), new HashSet<Edge>(),
@@ -107,8 +105,17 @@ public class QueryGraph {
 
 	public QueryNode createNode(  ) {
 		QueryNode newNode = new QueryNode();
+				
 		nodes.add( newNode );
 		return newNode;
+	}
+	
+	public void removeNode( QueryNode node ) {	  
+	  nodes.remove( node );
+	  for (Edge e: node.incomingEdges)
+	    e.n1.outgoingEdges.remove( e );
+	  for (Edge e: node.outgoingEdges)
+	    e.n2.incomingEdges.remove( e );
 	}
 	
 	public Edge createEdge(QueryNode n1, QueryNode n2) {
@@ -131,6 +138,15 @@ public class QueryGraph {
 		edges.remove( e );
 	}
 	
+	public void setHeadNode( QueryNode node ) {
+	  assert( node != null );
+	  assert( nodes.contains( node ) );
+	}
+	
+	public int getNumNodes() { 
+	  return nodes.size();
+	}
+	
 	public static void main( String [] args ) {
 	  QueryGraph graph = new QueryGraph();
 	  QueryNode n1 = graph.createNode();
@@ -141,8 +157,7 @@ public class QueryGraph {
 	  graph.addEdge( e1, n1, n2 );
 	  Edge e2 = new Edge( EdgeDescriptor.Type.SIBLING);
 	  graph.addEdge( e2, n2, n3 );
-	  graph.headNode = n1;
 	  
-	  System.out.println( graph.toTregexQuery() );
+	  System.out.println( graph.toTregexQuery(n1) );
 	}
 }

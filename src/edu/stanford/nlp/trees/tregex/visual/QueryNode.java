@@ -1,17 +1,21 @@
 package edu.stanford.nlp.trees.tregex.visual;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class QueryNode {
-	String label;
+	public String label;
 	public String pattern;
+	
+	// groups
+	public HashMap<Integer, String> groupLabels;
 	
 	List<Edge> incomingEdges;
 	List<Edge> outgoingEdges;
 	
 	public QueryNode() {
-	  this( "/.*/" );
+	  this( ".*" );
 	}
 	
 	public QueryNode( String pattern ) {
@@ -19,6 +23,6 @@ public class QueryNode {
 	  outgoingEdges = new ArrayList<Edge>();
 	  this.pattern = pattern;
 	  this.label = "";
+	  this.groupLabels = new HashMap<Integer, String>();
 	}
-	
 }
