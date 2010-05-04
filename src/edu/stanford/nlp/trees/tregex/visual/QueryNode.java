@@ -1,10 +1,13 @@
 package edu.stanford.nlp.trees.tregex.visual;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class QueryNode {
+import edu.stanford.nlp.trees.tregex.visual.gui.Node;
+
+public class QueryNode extends Ownable<Node> {
 	public String label;
 	public String pattern;
 	
@@ -24,5 +27,34 @@ public class QueryNode {
 	  this.pattern = pattern;
 	  this.label = "";
 	  this.groupLabels = new HashMap<Integer, String>();
+	}
+	
+	/**
+	 * Returns an unmodifiable list of all edges
+	 * 
+	 * @return
+	 */
+	public List<QueryEdge> getEdges() {
+	  List<QueryEdge> edges = new ArrayList<QueryEdge>();
+	  edges.addAll( incomingEdges );
+	  edges.addAll( outgoingEdges );
+	  return Collections.unmodifiableList( edges );
+	}
+	
+	public boolean hasEdgeTo( QueryNode toNode ) {
+	  for (QueryEdge edge: outgoingEdges)
+	    if (edge.n2 == toNode)
+	      return true;
+	  return false;
+	}
+	public boolean hasEdgeFrom( QueryNode fromNode ) {
+    for (QueryEdge edge: incomingEdges)
+      if (edge.n1 == fromNode)
+        return true;
+    return false;
+  }
+	
+	public int getDegree() {
+	  return incomingEdges.size() + outgoingEdges.size();
 	}
 }

@@ -16,11 +16,16 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import edu.stanford.nlp.trees.tregex.visual.QueryEdge;
 import edu.stanford.nlp.trees.tregex.visual.EdgeDescriptor;
 
-public class EdgePropertiesPanel extends ActionPanel implements ActionListener, ItemListener {
+public class EdgePropertiesPanel extends ActionPanel implements 
+  ActionListener, ItemListener, DocumentListener {
 
   private static final long serialVersionUID = -755852857965654456L;
   
@@ -52,16 +57,26 @@ public class EdgePropertiesPanel extends ActionPanel implements ActionListener, 
 
     optionalCheckbox = new JCheckBox( "Optional Constraint" );
     optionalCheckbox.addItemListener( this );
-    negativeCheckbox = new JCheckBox( "Optional Constraint" );
+    negativeCheckbox = new JCheckBox( "Negative Constraint" );
     negativeCheckbox.addItemListener( this );
 
     JLabel nLabel = new JLabel( "N: " );
     nField = new JTextField( 3 );
-    //nField.getDocument().addDocumentListener( this );
+    nField.getDocument().addDocumentListener( this );
     JLabel viaLabel = new JLabel( "Via: " );
     viaField = new JTextField( 15 );
-    //viaField.getDocument().addDocumentListener( this );
+    viaField.getDocument().addDocumentListener( this );
 
+    // add the components
+    this.add( title );
+    this.add( edgeTypeList );
+    this.add( optionalCheckbox );
+    this.add( negativeCheckbox );
+    this.add( nLabel );
+    this.add( nField );
+    this.add( viaLabel );
+    this.add( viaField );
+    
     // layout components
     layout.startOffset( title ).below( title, edgeTypeList )
       .below(edgeTypeList, optionalCheckbox )
@@ -96,7 +111,9 @@ public class EdgePropertiesPanel extends ActionPanel implements ActionListener, 
 
   private void updateFields() {
     nField.setEnabled( linkedEdge.hasNumberArg() );
+    nField.setEditable( linkedEdge.hasNumberArg() );
     viaField.setEnabled( linkedEdge.hasViaArg() );
+    viaField.setEditable( linkedEdge.hasViaArg() );
   }
 
   @Override
@@ -117,6 +134,49 @@ public class EdgePropertiesPanel extends ActionPanel implements ActionListener, 
       linkedEdge.setOptional( stateChange == ItemEvent.SELECTED );
     if (source == negativeCheckbox)
       linkedEdge.setNegative( stateChange == ItemEvent.SELECTED );
+    fireEvent( linkedEdge, EDGE_CHANGED );
+  }
+
+  @Override
+  public void changedUpdate(DocumentEvent arg0) {
+    documentUpdate( arg0 );
+  }
+
+  @Override
+  public void insertUpdate(DocumentEvent arg0) {
+    documentUpdate( arg0 );
+  }
+
+  @Override
+  public void removeUpdate(DocumentEvent arg0) {
+    documentUpdate( arg0 );    
+  }
+  
+  private void documentUpdate( DocumentEvent arg0 ) {
+    Document d = arg0.getDocument();
+    String text = "";
+    try {
+      text = d.getText( 0, d.getLength() );
+    }
+    catch ( BadLocationException e ) {
+      return;
+    }
+    if ( d == nField.getDocument() ) {
+      // make sure the result is a number
+      try 
+      {
+        Integer n = Integer.parseInt( text );
+        if (n <= 0)
+          return;
+        linkedEdge.setN( n );
+      }
+      catch (NumberFormatException e) {
+        return;
+      }
+    }
+    if ( d == viaField.getDocument() ) {
+      linkedEdge.setVia( text );
+    }
     fireEvent( linkedEdge, EDGE_CHANGED );
   }
 }

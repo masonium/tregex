@@ -1,14 +1,18 @@
 package edu.stanford.nlp.trees.tregex.visual;
 
-public class QueryEdge {
+import edu.stanford.nlp.trees.tregex.visual.gui.Edge;
+
+public class QueryEdge extends Ownable<Edge> {
 
 	public QueryNode getNode1() { return n1; }
 	public QueryNode getNode2() { return n2; }
 	public EdgeDescriptor getDescriptor() { return descriptor; }
 	
+	// topological info
 	QueryNode n1;
 	QueryNode n2;
 
+	// semantic info
 	EdgeDescriptor descriptor;
 
 	public QueryEdge( ) {
@@ -27,9 +31,7 @@ public class QueryEdge {
 	public String render(boolean reverse) {
 		return descriptor.render(reverse);
 	}
-  public void flip() {
-    QueryNode temp = n1;
-    n1 = n2;
-    n2 = temp;
+  public void cloneDescriptor(EdgeDescriptor descriptor2) {
+    descriptor = (EdgeDescriptor)descriptor2.clone();  
   }
 }

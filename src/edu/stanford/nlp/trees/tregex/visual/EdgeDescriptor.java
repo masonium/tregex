@@ -1,6 +1,6 @@
 package edu.stanford.nlp.trees.tregex.visual;
 
-public class EdgeDescriptor {	
+public class EdgeDescriptor implements Cloneable {	
 	Type edgeType;
 	boolean optional;
 	boolean negative;
@@ -12,7 +12,7 @@ public class EdgeDescriptor {
 	  this.optional = false;
 	  this.negative = false;
 	  this.N = 1;
-	  this.via = "";
+	  this.via = ".*";
 	}
 	
 	public String render(boolean reverse) {
@@ -21,6 +21,11 @@ public class EdgeDescriptor {
 		return result;
 	}
 	
+	/**
+	 * Render the operation, ignoring negative and optional traits
+	 * @param reverse
+	 * @return
+	 */
 	private String simpleRender(boolean reverse) {
 		boolean normal = !reverse;
 		
@@ -47,14 +52,17 @@ public class EdgeDescriptor {
 			return normal ? ">>:" : "<<:";
 		case SIBLING: 
 			return "$";
-		//case EQUALS:
+		case DESCENDANT_VIA:
+		  return (normal ? ">" : "<") 
+		    + "+(" + via + ")";
+		case PRECEDES_VIA:
+		  return (normal ? "." : ",") 
+      + "+(" + via + ")";
 		default:
-			return "==";				
+		//case EQUALS:
+			return "==";	
 		}
 	}
-
-	
-	
 	
   public Type getEdgeType() {
     return edgeType;
@@ -134,12 +142,22 @@ public class EdgeDescriptor {
       return (this == DESCENDANT_VIA || this == PRECEDES_VIA );
     }
   }
-
+  
   public boolean isNegative() {
     return negative;
   }
 
   public void setNegative(boolean negative) {
     this.negative = negative;
+  }
+  
+  public Object clone() {
+    EdgeDescriptor d = new EdgeDescriptor();
+    d.edgeType = edgeType;
+    d.N = N;
+    d.negative = negative;
+    d.optional = optional;
+    d.via = new String(via);
+    return d;
   }
 }

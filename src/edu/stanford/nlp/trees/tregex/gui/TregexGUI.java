@@ -79,6 +79,8 @@ import javax.swing.TransferHandler;
 import edu.stanford.nlp.io.NumberRangesFileFilter;
 import edu.stanford.nlp.trees.tregex.gui.MatchesPanel.MatchesPanelListener;
 import edu.stanford.nlp.trees.tregex.tsurgeon.Tsurgeon;
+import edu.stanford.nlp.trees.tregex.visual.gui.TextQueryPanel;
+import edu.stanford.nlp.trees.tregex.visual.gui.VisualQueryFrame;
 
 /**
  * Main class for creating a tregex gui.  Manages the components and holds the menu bar.
@@ -101,6 +103,7 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
   private JMenuItem quit;//for when we're not running on a mac
   private JMenuItem copy;
   private JMenuItem clearFileList;
+  private JMenuItem constructVisualQuery;
   //file choosing components for loading trees
   private JFileChooser chooser; // = null;
   private static File chooserFile;
@@ -110,6 +113,9 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
   private JDialog preferenceDialog; // = null;
   private JDialog aboutBox; // = null;
 
+  // query editor
+  private VisualQueryFrame visualQueryFrame;
+  
 
   private JMenuBar getMenu() {
     JMenuBar mbar = new JMenuBar();
@@ -151,7 +157,6 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
     copy.setActionCommand((String)TransferHandler.getCopyAction().
         getValue(Action.NAME));
     copy.addActionListener(new TransferActionListener());
-
 
     edit.add(copy);
 
@@ -726,6 +731,11 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
     } else if (source == visualQuery) {
       doVisualQuery();
     }
+    
+    if (e.getActionCommand() == TextQueryPanel.COPY_QUERY) {
+      InputPanel.getInstance().setTregexPattern( visualQueryFrame.getQuery() );
+    }
+      
   }
 
   public void doClearFileList() {
@@ -734,7 +744,12 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
   }
 
   public void doVisualQuery() {
-    // TODO: add visual query GUI
+    if (visualQueryFrame == null) {
+      visualQueryFrame = new VisualQueryFrame();
+      visualQueryFrame.addActionListener( this );
+    }
+    visualQueryFrame.clear();
+    visualQueryFrame.setVisible( true );
   }
   
   public static void doQuit() {

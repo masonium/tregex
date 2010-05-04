@@ -38,6 +38,7 @@ public class Node extends JLabel implements Draggable, Selectable {
     this.queryNode = node;
     this.selected = selected;
     this.headNode = false;
+    this.queryNode.setOwner( this );
     updateText();
     setVisible( true );
     setSelected( selected );
@@ -76,23 +77,27 @@ public class Node extends JLabel implements Draggable, Selectable {
 
   private void updateAppearance() {    
     Color c = isHeadNode() ? new Color(0.5f, 0.5f, 0.8f) : Color.BLACK;
-    Border border = BorderFactory.createLineBorder( c );
+    Border border = BorderFactory.createCompoundBorder( 
+        BorderFactory.createLineBorder( c ),
+        BorderFactory.createEmptyBorder(3, 3, 3, 3) );
     if (selected)
       border = BorderFactory.createCompoundBorder( BorderFactory.createLineBorder( Color.RED ),
           BorderFactory.createCompoundBorder( BorderFactory.createEmptyBorder( 1, 1, 1, 1 ),
               border));
+    this.setOpaque( true );
     this.setBorder( border );
+    this.setBackground( Color.WHITE );
     this.setForeground( c );
     
     updateBounds();
   }
-
+  
   private void updateText() {
     setText( "<html>" + queryNode.pattern + //Util.escapeHTML( queryNode.pattern ) + 
         (queryNode.label.isEmpty() ? "" : 
           "<P>[" + Util.escapeHTML( queryNode.label ) + "]</html>"));  
   }
-
+  
   @Override
   public Component getComponent() {
     return this;

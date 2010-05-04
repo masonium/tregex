@@ -30,7 +30,8 @@ public class NodePropertiesPanel extends ActionPanel implements ItemListener {
   
   // implemented events
   public static final String HEAD_NODE_SELECTED = "Head Node Selected";
-    
+  public static final String NODE_CHANGED = "Node Changed";  
+  
   private final int MAX_GROUPS = 4;
   
   // GUI
@@ -198,6 +199,8 @@ public class NodePropertiesPanel extends ActionPanel implements ItemListener {
     private void update(DocumentEvent arg0) {
       System.out.println("change");
       
+      boolean nodeChanged = false;
+      
       if ( panel.linkedNode == null )
         return;
       
@@ -212,18 +215,23 @@ public class NodePropertiesPanel extends ActionPanel implements ItemListener {
       switch( field ) {
       case LABEL:
         panel.linkedNode.setLabel( trimmed );
-        return;
+        nodeChanged = true;
+        break;
       case PATTERN:
         if (Util.isValidRegex(newText) != null) {
           panel.linkedNode.setPattern( newText );
           panel.updateGroupFields();
+          nodeChanged = true;
         }
-        return;
+        break;
       // case GROUPn
       default:
         panel.linkedNode.setGroupLabel( field.id, trimmed );
-        return;
+        nodeChanged = true;
+        break;
       }
+      if (nodeChanged)
+        fireEvent( linkedNode, NODE_CHANGED );
     }
   }
   

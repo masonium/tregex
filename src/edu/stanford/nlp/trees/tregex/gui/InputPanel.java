@@ -713,6 +713,9 @@ public class InputPanel extends JPanel implements ActionListener, ChangeListener
     }
   }
 
+  public void setTregexPattern( String pattern ) {
+    this.tregexPattern.setText( pattern );
+  }
 
   /**
    * Check all active treebanks to find the trees that match the given pattern when interpreted

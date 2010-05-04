@@ -1,9 +1,12 @@
 package edu.stanford.nlp.trees.tregex.visual.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.RenderingHints.Key;
 import java.awt.geom.Line2D;
 
 import edu.stanford.nlp.trees.tregex.visual.EdgeDescriptor;
@@ -44,16 +47,9 @@ public class Edge implements Selectable {
     this.edge = edge;
     this.type = Type.GRAPH_EDGE;
     this.line = new Line2D.Double(n1.getLocation(), n2.getLocation());
+    this.edge.setOwner( this );
   }
-  
-  public void flip() {
-    Node temp = n1;
-    n1 = n2;
-    n2 = temp;
     
-    edge.flip();
-  }
-  
   public boolean clickedOn( int x, int y ) {
     return line.intersects( x-2, y-2, 5, 5 );
   }
@@ -69,7 +65,9 @@ public class Edge implements Selectable {
     
     Graphics2D g2 = (Graphics2D) g;
         
-    g2.setColor( Color.BLACK );
+    g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+    g2.setStroke( new BasicStroke(2.0f) );
+    g2.setColor( isSelected() ? Color.red : Color.BLACK );
     
     // The drawing style depends on the edge type.
     switch (this.type) {
@@ -112,6 +110,10 @@ public class Edge implements Selectable {
   @Override
   public boolean getSelected() {
     return selected;
+  }
+
+  QueryEdge getQueryEdge() {
+    return edge;
   }
   
 }
