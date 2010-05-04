@@ -2,6 +2,8 @@ package edu.stanford.nlp.trees.tregex.visual.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.regex.Pattern;
@@ -17,7 +19,7 @@ import edu.stanford.nlp.trees.tregex.visual.QueryNode;
 
 import net.java.swingfx.jdraggable.Draggable;
 
-public class Node extends JLabel implements Draggable {
+public class Node extends JLabel implements Draggable, Selectable {
 
   private static final long serialVersionUID = 2764812387581897795L;
 
@@ -122,5 +124,16 @@ public class Node extends JLabel implements Draggable {
 
   public QueryNode getQueryNode() {
     return queryNode;
+  }
+  
+  public Point getCenter() {
+    Point loc = getLocation();
+    Dimension size = getSize();
+    return new Point(loc.x + size.width/2, loc.y + size.height/2);
+  }
+
+  @Override
+  public boolean getSelected() {
+    return selected;
   }
 }

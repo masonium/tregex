@@ -12,11 +12,11 @@ import java.util.Set;
 public class QueryGraph {
 	
 	List<QueryNode> nodes;
-	List<Edge> edges;
+	List<QueryEdge> edges;
 	
 	public QueryGraph() {
 	  this.nodes = new ArrayList<QueryNode>();
-	  this.edges = new ArrayList<Edge>();		
+	  this.edges = new ArrayList<QueryEdge>();		
 	}
 	
 	/**
@@ -26,12 +26,12 @@ public class QueryGraph {
 	public String toTregexQuery( QueryNode headNode ) {
 		Map<QueryNode, String> labels = assignLabelsToNodes( );
 				
-		return visitNode( headNode, null, new HashSet<QueryNode>(), new HashSet<Edge>(),
+		return visitNode( headNode, null, new HashSet<QueryNode>(), new HashSet<QueryEdge>(),
 				labels);
 	}
 	
 	public String visitNode( QueryNode currentNode, QueryNode previousNode,
-			Set<QueryNode> visitedNodes, Set<Edge> visitedEdges,
+			Set<QueryNode> visitedNodes, Set<QueryEdge> visitedEdges,
 			Map<QueryNode, String> labels ) {
 		
 		String label = labels.get( currentNode );
@@ -41,7 +41,7 @@ public class QueryGraph {
 		visitedNodes.add( currentNode );
 		String query = currentNode.pattern + "=" + label;
 				
-		for ( Edge e: currentNode.outgoingEdges ) {
+		for ( QueryEdge e: currentNode.outgoingEdges ) {
 			// skip any relations already rendered
 			if ( visitedEdges.contains(e) )
 				continue;
@@ -53,7 +53,7 @@ public class QueryGraph {
 					visitedNodes, visitedEdges, labels ) + ")";
 			
 		}
-		for ( Edge e: currentNode.incomingEdges ) {
+		for ( QueryEdge e: currentNode.incomingEdges ) {
 			// skip any relations already rendered
 			if ( visitedEdges.contains(e) )
 				continue;
@@ -112,19 +112,19 @@ public class QueryGraph {
 	
 	public void removeNode( QueryNode node ) {	  
 	  nodes.remove( node );
-	  for (Edge e: node.incomingEdges)
+	  for (QueryEdge e: node.incomingEdges)
 	    e.n1.outgoingEdges.remove( e );
-	  for (Edge e: node.outgoingEdges)
+	  for (QueryEdge e: node.outgoingEdges)
 	    e.n2.incomingEdges.remove( e );
 	}
 	
-	public Edge createEdge(QueryNode n1, QueryNode n2) {
-	  Edge e = new Edge();
+	public QueryEdge createEdge(QueryNode n1, QueryNode n2) {
+	  QueryEdge e = new QueryEdge();
 	  addEdge( e, n1, n2 );
 	  return e;
 	}
 	
-	public void addEdge(Edge e, QueryNode n1, QueryNode n2) {
+	public void addEdge(QueryEdge e, QueryNode n1, QueryNode n2) {
 		e.n1 = n1;
 		e.n2 = n2;
 		n1.outgoingEdges.add( e );
@@ -132,7 +132,7 @@ public class QueryGraph {
 		edges.add( e );
 	}
 	
-	public void removeEdge( Edge e ) {
+	public void removeEdge( QueryEdge e ) {
 		e.n1.outgoingEdges.remove( e );
 		e.n2.incomingEdges.remove( e );
 		edges.remove( e );
@@ -153,9 +153,9 @@ public class QueryGraph {
 	  QueryNode n2 = graph.createNode();
 	  QueryNode n3 = graph.createNode();
 	  
-	  Edge e1 = new Edge( EdgeDescriptor.Type.DESCENDANT);
+	  QueryEdge e1 = new QueryEdge( EdgeDescriptor.Type.DESCENDANT);
 	  graph.addEdge( e1, n1, n2 );
-	  Edge e2 = new Edge( EdgeDescriptor.Type.SIBLING);
+	  QueryEdge e2 = new QueryEdge( EdgeDescriptor.Type.SIBLING);
 	  graph.addEdge( e2, n2, n3 );
 	  
 	  System.out.println( graph.toTregexQuery(n1) );

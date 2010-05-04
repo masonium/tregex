@@ -53,9 +53,7 @@ public class NodePropertiesPanel extends ActionPanel implements ItemListener {
   {    
     this.setLayout( layout = new FlowUtilityLayout(this, 10, 15) );
     
-    title = new JLabel("Node Properties");
-    Font curFont = title.getFont();
-    title.setFont( new Font(curFont.getFontName(), curFont.getStyle(), curFont.getSize() * 3/2) );
+    title = new JLabel("<html><h2>Node Properties</h2></html>");
     
     patternLabel = new JLabel("Pattern:");
     labelLabel = new JLabel("Label:");

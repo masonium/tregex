@@ -11,16 +11,16 @@ public class QueryNode {
 	// groups
 	public HashMap<Integer, String> groupLabels;
 	
-	List<Edge> incomingEdges;
-	List<Edge> outgoingEdges;
+	List<QueryEdge> incomingEdges;
+	List<QueryEdge> outgoingEdges;
 	
 	public QueryNode() {
 	  this( ".*" );
 	}
 	
 	public QueryNode( String pattern ) {
-	  incomingEdges = new ArrayList<Edge>();
-	  outgoingEdges = new ArrayList<Edge>();
+	  incomingEdges = new ArrayList<QueryEdge>();
+	  outgoingEdges = new ArrayList<QueryEdge>();
 	  this.pattern = pattern;
 	  this.label = "";
 	  this.groupLabels = new HashMap<Integer, String>();

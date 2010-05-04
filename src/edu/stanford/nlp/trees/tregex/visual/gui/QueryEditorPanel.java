@@ -1,5 +1,6 @@
 package edu.stanford.nlp.trees.tregex.visual.gui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MenuItem;
@@ -12,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +26,13 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import edu.stanford.nlp.trees.tregex.visual.QueryEdge;
 import edu.stanford.nlp.trees.tregex.visual.QueryGraph;
 import edu.stanford.nlp.trees.tregex.visual.QueryNode;
 
 import net.java.swingfx.jdraggable.DefaultDraggableManager;
 import net.java.swingfx.jdraggable.DragPolicy;
+import net.java.swingfx.jdraggable.DraggableListener;
 
 public class QueryEditorPanel extends ActionPanel implements ActionListener, MouseListener {
 
@@ -47,23 +51,32 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
   DefaultDraggableManager dm;
 
   // Edge popup menu
+  JPopupMenu edgeMenu;
+  JMenuItem flipEdgeItem;
+  JMenuItem deleteEdgeItem;
   
   // Node popup menu
-
   JPopupMenu nodeMenu;
+  JMenuItem addEdgeItem;
   JMenuItem deleteNodeItem;
 
   // popup menu
   JPopupMenu popupMenu;
   JMenuItem addNodeItem;
-  JMenuItem addEdgeItem;
 
   // underlying query graph
   QueryGraph queryGraph;
   int mouseX, mouseY;
 
+  // state
   Node selectedNode;
   Node headNode;
+  List<Edge> graphEdges;
+  Edge selectedEdge;
+  
+  boolean choosingSecond = false;
+  Node firstNode;
+  Node popupTarget;
   
   public QueryEditorPanel() {
     this.setLayout( null );
@@ -74,6 +87,7 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
     initializePopupMenu();
 
     queryGraph = new QueryGraph();
+    graphEdges = new ArrayList<Edge>();
     
     this.addMouseListener( this );
   }
@@ -83,17 +97,21 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
     popupMenu.add( addNodeItem = new JMenuItem("Add Node") );
     //addNodeItem.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_N, ActionEvent.CTRL_MASK ) );
     addNodeItem.addActionListener( this );
-    popupMenu.addSeparator();
-    popupMenu.add( addEdgeItem = new JMenuItem("Add Edge") );
-    //addEdgeItem.setAccelerator( KeyStroke.getKeyStroke( KeyEvent.VK_E, ActionEvent.CTRL_MASK ) );
-    addEdgeItem.addActionListener( this );
     this.add( popupMenu );
     this.addMouseListener( new PopupListener(this, popupMenu) );
     
-    
+    // node menu
     nodeMenu = new JPopupMenu();
     nodeMenu.add( deleteNodeItem = new JMenuItem("Delete Node") );
     deleteNodeItem.addActionListener( this );
+    nodeMenu.add( addEdgeItem = new JMenuItem("Add Edge") );
+    addEdgeItem.addActionListener( this );
+    
+    //updatePopupMenu();
+  }
+  
+  private void updatePopupMenu() {
+    addEdgeItem.setEnabled( queryGraph.getNumNodes() > 1 );
   }
   
   @Override
@@ -110,9 +128,16 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
     
     // menu item for deleting a node
     if (source == deleteNodeItem ) {
-      if ( selectedNode != null && selectedNode != headNode ) {
-        deleteNode( selectedNode );
+      if ( popupTarget != null && popupTarget != headNode ) {
+        deleteNode( popupTarget );
       }
+    }
+
+    // adding an edge
+    if ( source == addEdgeItem ) {
+      // switch to second-node state
+      choosingSecond = true;
+      firstNode = popupTarget;
     }
   }
   
@@ -125,8 +150,9 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
     if ( node == headNode )
       return;
     
-    // deselect the node
-    selectNode( null );
+    // deselect the node if already selected
+    if ( node == selectedNode )
+      selectNode( null );
     
     // delete the node from the query graph
     queryGraph.removeNode( node.getQueryNode() );
@@ -163,7 +189,7 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
   /**
    * Create a node at the most recent popup location
    */  
-  public void createNode(int x, int y) {
+  private void createNode(int x, int y) {
     QueryNode qn = queryGraph.createNode();
     Node n = new Node( this, qn );
 
@@ -179,7 +205,9 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
     this.repaint();
     
     // add the popup
-    n.addMouseListener( new NodeListener(n, this) );
+    NodeListener listener = new NodeListener(n, this);
+    n.addMouseListener( listener );
+    n.addMouseMotionListener( listener );
     
     // select this new node
     selectNode( n );
@@ -195,6 +223,56 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
     headNode.setHeadNode( true );
   }
   
+  private void createEdge( Node n1, Node n2 ) {
+    // create the edge add to list
+    QueryEdge qe = queryGraph.createEdge(n1.getQueryNode(), n2.getQueryNode());
+    Edge edge = new Edge(n1, n2, qe);
+    graphEdges.add( edge );
+    
+    // select the edge
+    //selectEdge( edge );
+    
+    // repaint
+    this.repaint();
+    
+    System.out.println( "Created edge" );
+  }
+  
+  @Override
+  public void paintComponent( Graphics g ) {
+    super.paintComponent( g );
+    
+    // render all of the edges
+    for ( Edge e: graphEdges )
+      e.render( g );
+    
+    Graphics2D g2 = (Graphics2D)g;
+    g2.setColor( Color.BLACK );
+    g2.drawLine( 100, 100, 300, 300 );
+  }
+  /*
+  private void selectEdge(Edge edge) {
+    // unselect any currently-selected nodes
+    if (selectedEdge != null) {
+      selectedEdge.setSelected( false );
+      fireEvent( selectedNode, NODE_DESELECTED );
+    }
+
+    selectedNode = nodeToSelect;
+
+    // [de]activate the delete option, depending on whether this is the head node or not
+    deleteNodeItem.setEnabled( nodeToSelect != headNode );
+    
+    if (nodeToSelect == null)
+      return;
+    
+    // select and store the input node
+    nodeToSelect.setSelected( true );    
+      
+    // tell interested parties that we've done this
+    fireEvent( selectedNode, NODE_SELECTED );
+  }*/
+
   /**
    * Detects left and right clicks from a node
    * @author mason
@@ -208,21 +286,53 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
       this.panel = panel;
       this.target = n;
     }
+    @Override
+    public void mouseMoved(MouseEvent e) {
+      if ( panel.dm.dragging() )
+        this.panel.repaint();
+    }
+    @Override
+    public void mouseDragged(MouseEvent e) {
+      if ( panel.dm.dragging() )
+        this.panel.repaint();
+    }
     
+    @Override
     public void mousePressed(MouseEvent e) {
-      // select this node
-      panel.selectNode( target );
+      // select this node if it's not a right click
+      if (!e.isPopupTrigger()) {
+        // if we're choosing a second node to create an edge,
+        // and it's not the same as this one
+        if (panel.choosingSecond) {
+          panel.choosingSecond = false;
+          
+          // grab the selecting node
+          Node from = panel.firstNode;
+          
+          // create the edge
+          panel.createEdge( from, target );
+          
+        }
+        else {
+          // otherwise, just select the target
+          panel.selectNode( target );
+        }
+      }
       
       maybeShowPopup( e );
     }
     
+    @Override
     public void mouseReleased(MouseEvent e) {
       maybeShowPopup( e );
     }
     
     public void maybeShowPopup(MouseEvent e) {
-      if (e.isPopupTrigger())
+      if (e.isPopupTrigger()) {
+        updatePopupMenu( );
+        panel.popupTarget = target;
         panel.nodeMenu.show( e.getComponent(), e.getX(), e.getY() );
+      }
     }
   }
     
@@ -261,6 +371,16 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
   public void mouseClicked(MouseEvent arg0) {
     // if we actually get this click, we didn't click a node
     selectNode( null );
+    
+    // check to see if any of the edges were selected
+    Edge s = null;
+    for ( Edge e: graphEdges )
+      if ( e.clickedOn( arg0.getX(), arg0.getY() ) ) {
+        s = e;
+        break;
+      }
+    
+    //selectEdge( s );
   }
 
   @Override
