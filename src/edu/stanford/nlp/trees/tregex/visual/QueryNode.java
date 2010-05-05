@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import edu.stanford.nlp.trees.tregex.visual.gui.Node;
 
 public class QueryNode extends Ownable<Node> {
 	public String label;
-	public String pattern;
+	private String pattern;
 	
 	// groups
 	public HashMap<Integer, String> groupLabels;
@@ -57,4 +58,38 @@ public class QueryNode extends Ownable<Node> {
 	public int getDegree() {
 	  return incomingEdges.size() + outgoingEdges.size();
 	}
+
+  public String getPatternWithGroups() {
+    // clear out any empty patterns
+    List<Integer> keys = new ArrayList<Integer>();
+    keys.addAll( groupLabels.keySet() );
+    
+    for (Integer key: keys)
+      if (groupLabels.get( key ).trim().isEmpty())
+        groupLabels.remove( key );
+    
+    // if there are any patterns, adjoin them
+    if (groupLabels.size() == 0)
+      return pattern;
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append( "/" );
+    sb.append( pattern );
+    sb.append( "/" );
+    for (Entry<Integer, String> entry: groupLabels.entrySet()) {
+      sb.append( "#" );
+      sb.append( entry.getKey() );
+      sb.append( "%" );
+      sb.append( entry.getValue() );
+    }
+    return sb.toString();
+  }
+
+  public String getPattern() {
+    return pattern;
+  }
+
+  public void setPattern(String pattern) {
+    this.pattern = pattern;
+  }
 }

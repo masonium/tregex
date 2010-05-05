@@ -20,7 +20,7 @@ public class EdgeDescriptor implements Cloneable {
 	  result = (negative ? "!" : "") + (optional ? "?" : "") + result;
 		return result;
 	}
-	
+		
 	/**
 	 * Render the operation, ignoring negative and optional traits
 	 * @param reverse
@@ -50,8 +50,16 @@ public class EdgeDescriptor implements Cloneable {
 			return normal ? ">:" : "<:";
 		case UNARY_DESCENDANT:
 			return normal ? ">>:" : "<<:";
+		case LEFTMOST_DESCENDANT:
+		  return normal ? ">>," : "<<,";
+		case RIGHTMOST_DESCENDANT:
+		  return normal ? ">>-" : "<<-";
 		case SIBLING: 
 			return "$";
+		case LEFT_SIBLING:
+		  return normal ? "$.." : "$,,";
+    case IMMEDIATE_LEFT_SIBLING:
+      return normal ? "$." : "$,";
 		case DESCENDANT_VIA:
 		  return (normal ? ">" : "<") 
 		    + "+(" + via + ")";
@@ -106,9 +114,11 @@ public class EdgeDescriptor implements Cloneable {
     IMMEDIATELY_PRECEDES("Immediately Precedes"),
     ONLY_DESCENDANT("Only descendant of"),
     UNARY_DESCENDANT("Descendant of (via unary tree)"),
+    LEFTMOST_DESCENDANT("Left-most Descendant of"),
+    RIGHTMOST_DESCENDANT("Right-most Descendant of"),
     SIBLING("Sibling of"),
-    //IMMEDIATE_SIBLING,
-    EQUALS("Equal to"),
+    LEFT_SIBLING("Left Sibling of"),
+    IMMEDIATE_LEFT_SIBLING("Immediate Left Sibling of"),
     DESCENDANT_VIA("Descendant via"),
     PRECEDES_VIA("Precedes via");
     
@@ -116,17 +126,68 @@ public class EdgeDescriptor implements Cloneable {
     private Type(String name) {
       this.name = name;
     }
+
+    // requires bar 
+    public boolean isOnlyType() {
+      return this == UNARY_DESCENDANT || this == ONLY_DESCENDANT;
+    }
     
-    /**
-     * Return a list of all of the text descriptions of enums
-     * @return
-     */
-    /*public static String[] descriptions() {
-      String [] descs = new String[ Type.values().length ];
-      for ( int i = 0; i < Type.values().length; ++i )
-        descs[i] = Type.values()[i].name;
-      return descs;
-    }*/
+    // requires double
+    public boolean requiresDoubleType() {
+      switch (this) {
+      case DESCENDANT:
+      case PRECEDES:
+      case UNARY_DESCENDANT:
+      case SIBLING:
+      case LEFT_SIBLING:
+        return true;
+      default:
+        return false;        
+      }
+    }
+    
+    public boolean isPrecedesType() {
+      switch (this) {  
+      case PRECEDES:
+      case IMMEDIATELY_PRECEDES:
+      case PRECEDES_VIA:
+        return true;
+      default:
+        return false;
+      }
+    }
+    
+    public boolean isSiblingType() {
+      switch (this) {
+      case SIBLING:
+      case LEFT_SIBLING:
+      case IMMEDIATE_LEFT_SIBLING:
+        return true;
+      default:
+         return false;
+      }
+    }
+    
+    public boolean isDescendantType() {
+      switch (this) {
+      case DESCENDANT:
+      case DIRECT_DESCENDANT:
+      case NTH_CHILD:
+      case NTH_TO_LAST_CHILD:
+      case ONLY_DESCENDANT:
+      case UNARY_DESCENDANT:
+      case LEFTMOST_DESCENDANT:
+      case RIGHTMOST_DESCENDANT:
+      case DESCENDANT_VIA:
+        return true;
+      default:
+          return false;
+      }
+    }
+    
+    public boolean isDirectionalType() {
+      return this == LEFTMOST_DESCENDANT || this == RIGHTMOST_DESCENDANT;
+    }
     
     public String toString() { 
       return name;

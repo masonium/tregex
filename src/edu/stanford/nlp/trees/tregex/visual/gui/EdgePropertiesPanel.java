@@ -93,16 +93,11 @@ public class EdgePropertiesPanel extends ActionPanel implements
     optionalCheckbox.setSelected( edge.isOptional() );
     negativeCheckbox.setSelected( edge.isNegative() );
 
-    nField.setText( "" );
-    viaField.setText( "" );
+    //nField.setText( "" );
+    //viaField.setText( "" );
     
     // enable/disable fields as necessary
     updateFields();
-    
-    if (edge.hasNumberArg())
-      nField.setText( "" + edge.getN() );
-    if (edge.hasViaArg())
-      viaField.setText( edge.getVia() );    
   }
   
   public void unlinkEdge( ) {
@@ -114,6 +109,15 @@ public class EdgePropertiesPanel extends ActionPanel implements
     nField.setEditable( linkedEdge.hasNumberArg() );
     viaField.setEnabled( linkedEdge.hasViaArg() );
     viaField.setEditable( linkedEdge.hasViaArg() );
+    
+    if ( linkedEdge.hasNumberArg() )
+      nField.setText( "" + linkedEdge.getN() );
+    else
+      nField.setText( "" );
+    if ( linkedEdge.hasViaArg() )
+      viaField.setText( linkedEdge.getVia() ); 
+    else
+      viaField.setText( "" );
   }
 
   @Override

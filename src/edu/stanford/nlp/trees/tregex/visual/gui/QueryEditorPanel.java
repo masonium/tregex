@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -156,7 +157,7 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
         targetEdge = null;
       }
     }
-  }
+  }  
   
   private void flipEdge(Edge edge) {
     // delete the edge
@@ -319,7 +320,7 @@ public class QueryEditorPanel extends ActionPanel implements ActionListener, Mou
     
     // render all of the edges
     for ( Edge e: graphEdges )
-      e.render( g );    
+      e.render( g );
   }
 
   /**

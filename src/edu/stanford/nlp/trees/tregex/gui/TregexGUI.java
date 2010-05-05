@@ -162,21 +162,26 @@ public class TregexGUI extends JFrame implements ActionListener, MatchesPanelLis
 
     mbar.add(file);
     mbar.add(edit);
+
+    JMenu tools = new JMenu("Tools");
+
+    visualQuery = new JMenuItem("Construct visual query");
+    visualQuery.addActionListener(this);
+    visualQuery.setEnabled(true);
+    tools.add(visualQuery);
+    
     if(!isMacOSX()) {
       file.addSeparator();
-      JMenu tools = new JMenu("Tools");
 
-      visualQuery = new JMenuItem("Construct visual query");
-      visualQuery.addActionListener(this);
-      visualQuery.setEnabled(true);
-      tools.add(visualQuery);
       tools.addSeparator();
       tools.add(preferences);
 
-      mbar.add(tools);
       file.addSeparator();
       file.add(quit);
     }
+
+    mbar.add(tools);
+    
     setShortcutKeys(); //sets for appropriate operating system
     return mbar;
   }

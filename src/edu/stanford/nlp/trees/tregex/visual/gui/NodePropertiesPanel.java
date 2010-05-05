@@ -122,6 +122,8 @@ public class NodePropertiesPanel extends ActionPanel implements ItemListener {
     
     headNodeCheckBox.setSelected( node.isHeadNode() );
     headNodeCheckBox.setEnabled( !node.isHeadNode() );
+    
+    pattern.requestFocus();
   }
 
   void unlinkNode() {

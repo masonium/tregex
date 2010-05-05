@@ -46,7 +46,7 @@ public class VisualQueryFrame extends JFrame implements ActionListener {
   public VisualQueryFrame() {
     super("Visual Query Constructor");
     
-    //this.setDefaultLookAndFeelDecorated( true );
+    VisualQueryFrame.setDefaultLookAndFeelDecorated( true );
     this.setDefaultCloseOperation( JFrame.HIDE_ON_CLOSE );
    
     this.setResizable( false );
@@ -134,7 +134,7 @@ public class VisualQueryFrame extends JFrame implements ActionListener {
     else if ( command.equals( QueryEditorPanel.GRAPH_CHANGED ) ||
         command.equals( NodePropertiesPanel.NODE_CHANGED ) )
       graphChanged = true;
-    else if ( command.equals( this.CLEAR_QUERY_COMMAND ) ) 
+    else if ( command.equals( CLEAR_QUERY_COMMAND ) ) 
       clear();
     
     if (graphChanged)

@@ -93,7 +93,7 @@ public class Node extends JLabel implements Draggable, Selectable {
   }
   
   private void updateText() {
-    setText( "<html>" + queryNode.pattern + //Util.escapeHTML( queryNode.pattern ) + 
+    setText( "<html>" + queryNode.getPattern() + //Util.escapeHTML( queryNode.pattern ) + 
         (queryNode.label.isEmpty() ? "" : 
           "<P>[" + Util.escapeHTML( queryNode.label ) + "]</html>"));  
   }
@@ -112,8 +112,8 @@ public class Node extends JLabel implements Draggable, Selectable {
     updateAppearance();
   }
 
-  public String getPattern() { return queryNode.pattern; }
-  public void setPattern( String pattern ) { queryNode.pattern = pattern; updateText(); }
+  public String getPattern() { return queryNode.getPattern(); }
+  public void setPattern( String pattern ) { queryNode.setPattern(pattern); updateText(); }
   
   public String getLabel() { return queryNode.label; }
   public void setLabel( String label ) { queryNode.label = label; updateText(); }
